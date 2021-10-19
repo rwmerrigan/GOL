@@ -302,42 +302,64 @@ namespace Class2_Startup
                     // Read one row at a time.
                     string row = reader.ReadLine();
 
-                    // If the row begins with '!' then it is a comment
-                    // and should be ignored.
-
-                    // If the row is not a comment then it is a row of cells.
-                    // Increment the maxHeight variable for each row read.
-
+                    if(row.StartsWith("!") == true)
+                    {
+                        // If the row begins with '!' then it is a comment
+                        // and should be ignored.
+                        continue;
+                    }else if(row.StartsWith("!") == false)
+                    {
+                        // If the row is not a comment then it is a row of cells.
+                        // Increment the maxHeight variable for each row read.
+                        maxHeight++;
+                    }
                     // Get the length of the current row string
                     // and adjust the maxWidth variable if necessary.
+                    maxWidth = row.Length;
                 }
 
-                // Resize the current universe and scratchPad
+                // Resize the current universe and scratchPad, need to call universe = new bool[maxwidth, maxheight]
                 // to the width and height of the file calculated above.
+                universe = new bool[maxWidth, maxHeight];
+                scratchPad = new bool[maxWidth, maxHeight];
 
                 // Reset the file pointer back to the beginning of the file.
                 reader.BaseStream.Seek(0, SeekOrigin.Begin);
-
+                int yPos = 0;
                 // Iterate through the file again, this time reading in the cells.
                 while (!reader.EndOfStream)
                 {
                     // Read one row at a time.
                     string row = reader.ReadLine();
 
-                    // If the row begins with '!' then
-                    // it is a comment and should be ignored.
-
-                    // If the row is not a comment then 
-                    // it is a row of cells and needs to be iterated through.
-                    for (int xPos = 0; xPos < row.Length; xPos++)
+                    if(row.StartsWith("!") == true)
                     {
-                        // If row[xPos] is a 'O' (capital O) then
-                        // set the corresponding cell in the universe to alive.
-
-                        // If row[xPos] is a '.' (period) then
-                        // set the corresponding cell in the universe to dead.
+                        // If the row begins with '!' then
+                        // it is a comment and should be ignored.
+                        continue;
+                    }else if(row.StartsWith("!") == false)
+                    {
+                        // If the row is not a comment then 
+                        // it is a row of cells and needs to be iterated through.
+                        for (int xPos = 0; xPos < row.Length; xPos++)
+                        {
+                            if(row[xPos] == 'O')
+                            {
+                                // If row[xPos] is a 'O' (capital O) then
+                                // set the corresponding cell in the universe to alive.
+                                universe[xPos, yPos] = true;
+                            }else if(row[xPos] == '.')
+                            {
+                                // If row[xPos] is a '.' (period) then
+                                // set the corresponding cell in the universe to dead.
+                                universe[xPos, yPos] = false;
+                            }
+                        }
                     }
+                    //increment yPos
+                    yPos++;
                 }
+                graphicsPanel1.Invalidate();
 
                 // Close the file.
                 reader.Close();
@@ -359,7 +381,8 @@ namespace Class2_Startup
                 // Prefix all comment strings with an exclamation point.
                 // Use WriteLine to write the strings to the file. 
                 // It appends a CRLF for you.
-                writer.WriteLine("!This is my comment.");
+                DateTime time = DateTime.Now;
+                writer.WriteLine("!" + time.ToString());
 
                 // Iterate through the universe one row at a time.
                 for (int y = 0; y < universe.GetLength(1); y++)
