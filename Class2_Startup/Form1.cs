@@ -29,6 +29,8 @@ namespace Class2_Startup
 
         // Generation count
         int generations = 0;
+        // Living Cells Count
+        int livingCells = 0;
 
         public Form1()
         {
@@ -99,6 +101,7 @@ namespace Class2_Startup
             // Increment generation count, Update status strip generations
             generations++;
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            toolStripStatusLabelLivingCells.Text = "Living Cells = " + livingCells.ToString();
             graphicsPanel1.Invalidate();
         }
 
@@ -127,6 +130,7 @@ namespace Class2_Startup
 
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
         {
+            livingCells = 0;
             //this stringformat object is sent through the drawstring method that centers neighboors text
             StringFormat stringFormat = new StringFormat();
             stringFormat.Alignment = StringAlignment.Center;
@@ -162,6 +166,7 @@ namespace Class2_Startup
                     {
                         e.Graphics.FillRectangle(cellBrush, cellRect);
                         e.Graphics.DrawString(CountNeighborsFinite((int)x, (int)y).ToString(), neighboorFont, neighboorBrush, cellRect, stringFormat);
+                        livingCells++;
 
                     }
                     else if (universe[x, y] == false && CountNeighborsFinite((int)x, (int)y) != 0)
@@ -199,8 +204,17 @@ namespace Class2_Startup
                 // Toggle the cell's state
                 universe[(int)x, (int)y] = !universe[(int)x, (int)y];
 
-                // Tell Windows you need to repaint
-
+                if(universe[(int)x, (int)y] == true)
+                {
+                    // increment living cells then write to toolstrip
+                    livingCells++;
+                }
+                else if(universe[(int)x, (int)y] == false)
+                {
+                    // decrement living cells then write to toolstrip
+                    livingCells--;
+                }
+                toolStripStatusLabelLivingCells.Text = "Living Cells = " + livingCells.ToString();
             }
             graphicsPanel1.Invalidate();
         }

@@ -83,9 +83,9 @@ namespace Class2_Startup
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(9, 35);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(155, 9);
+            this.label1.Size = new System.Drawing.Size(164, 9);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Please Enter a Universe Size X for and X*X Grid";
+            this.label1.Text = "Please Enter a Universe Size X for and X by X Grid";
             // 
             // ModalDialog
             // 
@@ -93,7 +93,7 @@ namespace Class2_Startup
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.CancelButton;
-            this.ClientSize = new System.Drawing.Size(335, 173);
+            this.ClientSize = new System.Drawing.Size(297, 173);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.CancelButton);
