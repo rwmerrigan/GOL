@@ -13,6 +13,7 @@ namespace Class2_Startup
 {
     public partial class Form1 : Form
     {
+        int universeSize = 10;
         // The universe array
         bool[,] universe = new bool[10, 10];
         //Scratchpad to "write" changes to
@@ -21,6 +22,7 @@ namespace Class2_Startup
         // Drawing colors
         Color gridColor = Color.Black;
         Color cellColor = Color.Coral;
+        Color backgroundColor = Color.White;
 
         // The Timer class
         Timer timer = new Timer();
@@ -36,6 +38,8 @@ namespace Class2_Startup
             timer.Interval = 100; // milliseconds
             timer.Tick += Timer_Tick;
             timer.Enabled = false; // start timer running
+
+            graphicsPanel1.BackColor = Properties.Settings.Default.PanelColor;
         }
 
         // Calculate the next generation of cells
@@ -48,6 +52,7 @@ namespace Class2_Startup
                 // Iterate through the universe in the x, left to right
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
+                    scratchPad[x, y] = false;
                     if (universe[x, y] == true && CountNeighborsFinite((int)x, (int)y) < 2)
                     {
                         //Any living cell in the current universe with less than 2 living
@@ -273,6 +278,7 @@ namespace Class2_Startup
                 }
             }
             generations = 0;
+            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
             graphicsPanel1.Invalidate();
         }
 
@@ -461,6 +467,76 @@ namespace Class2_Startup
         }
 
         private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void backgroundColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = backgroundColor;
+
+            //dialogresult.ok means that the user clicked the affirmative button, like yes or ok
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                backgroundColor = dlg.Color;
+                graphicsPanel1.Invalidate();
+            }
+        }
+
+        private void cellColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void gridColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void universeSizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ModalDialog dlg = new ModalDialog();
+            dlg.Number = universeSize;
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                for (int y = 0; y < universe.GetLength(1); y++)
+                {
+                    // Iterate through the universe in the x, left to right
+                    for (int x = 0; x < universe.GetLength(0); x++)
+                    {
+                        if (universe[x, y] == true)
+                        {
+                            universe[x, y] = false;
+                        }
+                        if (scratchPad[x, y] == true)
+                        {
+                            scratchPad[x, y] = false;
+                        }
+                    }
+                }
+                generations = 0;
+                toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+                universeSize = dlg.Number;
+                universe = new bool[universeSize, universeSize];
+                scratchPad = new bool[universeSize, universeSize];
+                graphicsPanel1.Invalidate();
+            }
+
+        }
+
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripStatusLabelLivingCells_Click(object sender, EventArgs e)
         {
 
         }
