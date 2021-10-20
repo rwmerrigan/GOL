@@ -13,6 +13,10 @@ namespace Class2_Startup
 {
     public partial class Form1 : Form
     {
+        bool isHUDVisible = true;
+        bool isGridVisible = true;
+        bool isCellCountVisible = true;
+
         int universeResizeX = 10;
         int universeResizeY = 10;
         int randSeed = 0;
@@ -23,8 +27,8 @@ namespace Class2_Startup
 
         // Drawing colors
         Color gridColor = Color.Black;
-        Color cellColor = Color.Coral;
-        Color backgroundColor = Color.White;
+        Color cellColor = Color.Gray;
+        Color HUDColor = Color.Red;
 
         // The Timer class
         Timer timer = new Timer();
@@ -122,6 +126,10 @@ namespace Class2_Startup
             stringFormat.Alignment = StringAlignment.Center;
             stringFormat.LineAlignment = StringAlignment.Center;
 
+
+            StringFormat stringHUDFormat = new StringFormat();
+            stringHUDFormat.Alignment = StringAlignment.Near;
+            stringHUDFormat.LineAlignment = StringAlignment.Far;
             // Calculate the width and height of each cell in pixels
             // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
             float cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
@@ -131,8 +139,9 @@ namespace Class2_Startup
             // A Brush for filling living cells interiors (color)
             Brush cellBrush = new SolidBrush(cellColor);
             Brush neighboorBrush = new SolidBrush(gridColor);
+            Brush HUDBrush = new SolidBrush(HUDColor);
             // A Pen for drawing the grid lines (color, width)
-            Pen gridPen = new Pen(gridColor, 2);
+            Pen gridPen = new Pen(gridColor, 1);
             Font neighboorFont = new Font(this.Font, FontStyle.Bold);
 
             // Iterate through the universe in the y, top to bottom
@@ -151,20 +160,37 @@ namespace Class2_Startup
                     if (universe[x, y] == true)
                     {
                         e.Graphics.FillRectangle(cellBrush, cellRect);
-                        e.Graphics.DrawString(CountNeighborsFinite((int)x, (int)y).ToString(), neighboorFont, neighboorBrush, cellRect, stringFormat);
+                        if(isCellCountVisible == true)
+                        {
+                            e.Graphics.DrawString(CountNeighborsFinite((int)x, (int)y).ToString(), neighboorFont, neighboorBrush, cellRect, stringFormat);
+                        }
                         livingCells++;
 
                     }
                     else if (universe[x, y] == false && CountNeighborsFinite((int)x, (int)y) != 0)
                     {
-                        e.Graphics.DrawString(CountNeighborsFinite((int)x, (int)y).ToString(), neighboorFont, neighboorBrush, cellRect, stringFormat);
+                        if (isCellCountVisible == true)
+                        {
+                            e.Graphics.DrawString(CountNeighborsFinite((int)x, (int)y).ToString(), neighboorFont, neighboorBrush, cellRect, stringFormat);
+                        }
                     }
-                    // Outline the cell with a pen
-                    e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
-
+                    if(isGridVisible == true)
+                    {
+                        // Outline the cell with a pen
+                        e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
+                    }
                 }
             }
 
+            if(isHUDVisible == true)
+            {
+                e.Graphics.DrawString("Generations: " + generations + "\n" +
+                "Alive Cells: " + livingCells + "\n" +
+                "Universe Boundary: Finite" + "\n" +
+                "Universe Size: " + universe.Length,
+                neighboorFont, HUDBrush, graphicsPanel1.ClientRectangle, stringHUDFormat);
+            }
+            
             // Cleaning up pens and brushes
             gridPen.Dispose();
             cellBrush.Dispose();
@@ -519,9 +545,6 @@ namespace Class2_Startup
                 //invalidate when its done
                 graphicsPanel1.Invalidate();
             }
-
-
-
         }
 
         private void fromCurrentSeedToolStripMenuItem_Click(object sender, EventArgs e)
@@ -707,6 +730,54 @@ namespace Class2_Startup
             Properties.Settings.Default.PanelColor = graphicsPanel1.BackColor;
 
             Properties.Settings.Default.Save();
+        }
+
+        private void hUDVisibleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(isHUDVisible == true)
+            {
+                isHUDVisible = false;
+                hUDVisibleToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                isHUDVisible = true;
+                hUDVisibleToolStripMenuItem.Checked = true;
+            }
+            
+            graphicsPanel1.Invalidate();
+        }
+
+        private void gridVisibleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (isGridVisible == true)
+            {
+                isGridVisible = false;
+                gridVisibleToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                isGridVisible = true;
+                gridVisibleToolStripMenuItem.Checked = true;
+            }
+
+            graphicsPanel1.Invalidate();
+        }
+
+        private void cellCountVisibleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (isCellCountVisible == true)
+            {
+                isCellCountVisible = false;
+                cellCountVisibleToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                isCellCountVisible = true;
+                cellCountVisibleToolStripMenuItem.Checked = true;
+            }
+
+            graphicsPanel1.Invalidate();
         }
     }
 }
