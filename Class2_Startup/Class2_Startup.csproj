@@ -55,6 +55,12 @@
     <Compile Include="GraphicsPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="IntervalModal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IntervalModal.Designer.cs">
+      <DependentUpon>IntervalModal.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModalDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,6 +77,9 @@
     </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IntervalModal.resx">
+      <DependentUpon>IntervalModal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ModalDialog.resx">
       <DependentUpon>ModalDialog.cs</DependentUpon>

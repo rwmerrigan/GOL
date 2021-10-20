@@ -16,6 +16,7 @@ namespace Class2_Startup
         bool isHUDVisible = true;
         bool isGridVisible = true;
         bool isCellCountVisible = true;
+        bool isToroidal = false;
 
         int universeResizeX = 10;
         int universeResizeY = 10;
@@ -26,8 +27,8 @@ namespace Class2_Startup
         bool[,] scratchPad = new bool[10, 10];
 
         // Drawing colors
-        Color gridColor = Color.Black;
-        Color cellColor = Color.Gray;
+        Color gridColor = Properties.Settings.Default.GridColor;
+        Color cellColor = Properties.Settings.Default.CellColor;
         Color HUDColor = Color.Red;
 
         // The Timer class
@@ -60,43 +61,87 @@ namespace Class2_Startup
                 // Iterate through the universe in the x, left to right
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
-                    scratchPad[x, y] = false;
-                    if (universe[x, y] == true && CountNeighborsFinite((int)x, (int)y) < 2)
+                    if (isToroidal == false)
                     {
-                        //Any living cell in the current universe with less than 2 living
-                        //neighbors dies in the next generation as if by under-population.
-                        //If a cell meets this criteria in the universe array then make
-                        //the same cell dead in the scratch pad array.
                         scratchPad[x, y] = false;
+                        if (universe[x, y] == true && CountNeighborsFinite((int)x, (int)y) < 2)
+                        {
+                            //Any living cell in the current universe with less than 2 living
+                            //neighbors dies in the next generation as if by under-population.
+                            //If a cell meets this criteria in the universe array then make
+                            //the same cell dead in the scratch pad array.
+                            scratchPad[x, y] = false;
+                        }
+                        else if (universe[x, y] == true && CountNeighborsFinite((int)x, (int)y) > 3)
+                        {
+                            //Any living cell with more than 3 living neighbors will die in
+                            //the next generation as if by over - population.If so in the
+                            //universe then kill it in the scratch pad.
+                            scratchPad[x, y] = false;
+                        }
+                        else if (universe[x, y] == true && CountNeighborsFinite((int)x, (int)y) == 3)
+                        {
+                            //Any living cell with 2 or 3 living neighbors will live on into
+                            //the next generation.If this is the case in the universe then
+                            //the same cell lives in the scratch pad.
+                            scratchPad[x, y] = true;
+                        }
+                        else if (universe[x, y] == true && CountNeighborsFinite((int)x, (int)y) == 2)
+                        {
+                            //Any living cell with 2 or 3 living neighbors will live on into
+                            //the next generation.If this is the case in the universe then
+                            //the same cell lives in the scratch pad.
+                            scratchPad[x, y] = true;
+                        }
+                        else if (universe[x, y] == false && CountNeighborsFinite((int)x, (int)y) == 3)
+                        {
+                            //Any dead cell with exactly 3 living neighbors will be born into
+                            //the next generation as if by reproduction. If so in the universe
+                            //then make that cell alive in the scratch pad.
+                            scratchPad[x, y] = true;
+                        }
                     }
-                    else if (universe[x, y] == true && CountNeighborsFinite((int)x, (int)y) > 3)
+                    else if (isToroidal == true)
                     {
-                        //Any living cell with more than 3 living neighbors will die in
-                        //the next generation as if by over - population.If so in the
-                        //universe then kill it in the scratch pad.
                         scratchPad[x, y] = false;
+                        if (universe[x, y] == true && CountNeighborsToroidal((int)x, (int)y) < 2)
+                        {
+                            //Any living cell in the current universe with less than 2 living
+                            //neighbors dies in the next generation as if by under-population.
+                            //If a cell meets this criteria in the universe array then make
+                            //the same cell dead in the scratch pad array.
+                            scratchPad[x, y] = false;
+                        }
+                        else if (universe[x, y] == true && CountNeighborsToroidal((int)x, (int)y) > 3)
+                        {
+                            //Any living cell with more than 3 living neighbors will die in
+                            //the next generation as if by over - population.If so in the
+                            //universe then kill it in the scratch pad.
+                            scratchPad[x, y] = false;
+                        }
+                        else if (universe[x, y] == true && CountNeighborsToroidal((int)x, (int)y) == 3)
+                        {
+                            //Any living cell with 2 or 3 living neighbors will live on into
+                            //the next generation.If this is the case in the universe then
+                            //the same cell lives in the scratch pad.
+                            scratchPad[x, y] = true;
+                        }
+                        else if (universe[x, y] == true && CountNeighborsToroidal((int)x, (int)y) == 2)
+                        {
+                            //Any living cell with 2 or 3 living neighbors will live on into
+                            //the next generation.If this is the case in the universe then
+                            //the same cell lives in the scratch pad.
+                            scratchPad[x, y] = true;
+                        }
+                        else if (universe[x, y] == false && CountNeighborsToroidal((int)x, (int)y) == 3)
+                        {
+                            //Any dead cell with exactly 3 living neighbors will be born into
+                            //the next generation as if by reproduction. If so in the universe
+                            //then make that cell alive in the scratch pad.
+                            scratchPad[x, y] = true;
+                        }
                     }
-                    else if (universe[x, y] == true && CountNeighborsFinite((int)x, (int)y) == 3)
-                    {
-                        //Any living cell with 2 or 3 living neighbors will live on into
-                        //the next generation.If this is the case in the universe then
-                        //the same cell lives in the scratch pad.
-                        scratchPad[x, y] = true;
-                    }
-                    else if (universe[x, y] == true && CountNeighborsFinite((int)x, (int)y) == 2)
-                    {
-                        //Any living cell with 2 or 3 living neighbors will live on into
-                        //the next generation.If this is the case in the universe then
-                        //the same cell lives in the scratch pad.
-                        scratchPad[x, y] = true;
-                    }
-                    else if (universe[x, y] == false && CountNeighborsFinite((int)x, (int)y) == 3)
-                    {
-                        //Any dead cell with exactly 3 living neighbors will be born into
-                        //the next generation as if by reproduction. If so in the universe
-                        //then make that cell alive in the scratch pad.
-                        scratchPad[x, y] = true;
-                    }
+
                 }
             }
 
@@ -143,7 +188,7 @@ namespace Class2_Startup
             // A Pen for drawing the grid lines (color, width)
             Pen gridPen = new Pen(gridColor, 1);
             Font neighboorFont = new Font(this.Font, FontStyle.Bold);
-
+            string finiteOrToroidal = "";
             // Iterate through the universe in the y, top to bottom
             for (int y = 0; y < universe.GetLength(1); y++)
             {
@@ -157,24 +202,50 @@ namespace Class2_Startup
                     cellRect.Width = cellWidth;
                     cellRect.Height = cellHeight;
                     // Fill the cell with a brush if alive
-                    if (universe[x, y] == true)
+                    if (isToroidal == false)
                     {
-                        e.Graphics.FillRectangle(cellBrush, cellRect);
-                        if(isCellCountVisible == true)
+                        finiteOrToroidal = "Finite";
+                        if (universe[x, y] == true)
                         {
-                            e.Graphics.DrawString(CountNeighborsFinite((int)x, (int)y).ToString(), neighboorFont, neighboorBrush, cellRect, stringFormat);
-                        }
-                        livingCells++;
+                            e.Graphics.FillRectangle(cellBrush, cellRect);
+                            if (isCellCountVisible == true)
+                            {
+                                e.Graphics.DrawString(CountNeighborsFinite((int)x, (int)y).ToString(), neighboorFont, neighboorBrush, cellRect, stringFormat);
+                            }
+                            livingCells++;
 
-                    }
-                    else if (universe[x, y] == false && CountNeighborsFinite((int)x, (int)y) != 0)
-                    {
-                        if (isCellCountVisible == true)
+                        }
+                        else if (universe[x, y] == false && CountNeighborsFinite((int)x, (int)y) != 0)
                         {
-                            e.Graphics.DrawString(CountNeighborsFinite((int)x, (int)y).ToString(), neighboorFont, neighboorBrush, cellRect, stringFormat);
+                            if (isCellCountVisible == true)
+                            {
+                                e.Graphics.DrawString(CountNeighborsFinite((int)x, (int)y).ToString(), neighboorFont, neighboorBrush, cellRect, stringFormat);
+                            }
                         }
                     }
-                    if(isGridVisible == true)
+                    else if (isToroidal == true)
+                    {
+                        finiteOrToroidal = "Toroidal";
+                        if (universe[x, y] == true)
+                        {
+                            e.Graphics.FillRectangle(cellBrush, cellRect);
+                            if (isCellCountVisible == true)
+                            {
+                                e.Graphics.DrawString(CountNeighborsToroidal((int)x, (int)y).ToString(), neighboorFont, neighboorBrush, cellRect, stringFormat);
+                            }
+                            livingCells++;
+
+                        }
+                        else if (universe[x, y] == false && CountNeighborsToroidal((int)x, (int)y) != 0)
+                        {
+                            if (isCellCountVisible == true)
+                            {
+                                e.Graphics.DrawString(CountNeighborsToroidal((int)x, (int)y).ToString(), neighboorFont, neighboorBrush, cellRect, stringFormat);
+                            }
+                        }
+                    }
+
+                    if (isGridVisible == true)
                     {
                         // Outline the cell with a pen
                         e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
@@ -182,15 +253,15 @@ namespace Class2_Startup
                 }
             }
 
-            if(isHUDVisible == true)
+            if (isHUDVisible == true)
             {
                 e.Graphics.DrawString("Generations: " + generations + "\n" +
                 "Alive Cells: " + livingCells + "\n" +
-                "Universe Boundary: Finite" + "\n" +
+                "Universe Boundary: " + finiteOrToroidal + "\n" +
                 "Universe Size: " + universe.Length,
                 neighboorFont, HUDBrush, graphicsPanel1.ClientRectangle, stringHUDFormat);
             }
-            
+
             // Cleaning up pens and brushes
             gridPen.Dispose();
             cellBrush.Dispose();
@@ -273,6 +344,49 @@ namespace Class2_Startup
             }
             //Commenting this out caused the generations text to show correctly
             //graphicsPanel1.Invalidate();
+            return count;
+        }
+
+        private int CountNeighborsToroidal(int x, int y)
+        {
+            int count = 0;
+            int xLen = universe.GetLength(0);
+            int yLen = universe.GetLength(1);
+            for (int yOffset = -1; yOffset <= 1; yOffset++)
+            {
+                for (int xOffset = -1; xOffset <= 1; xOffset++)
+                {
+                    int xCheck = x + xOffset;
+                    int yCheck = y + yOffset;
+                    // if xOffset and yOffset are both equal to 0 then continue
+                    if (xOffset == 0 && yOffset == 0)
+                    {
+                        continue;
+                    }
+                    // if xCheck is less than 0 then set to xLen - 1
+                    if (xCheck < 0)
+                    {
+                        xCheck = xLen - 1;
+                    }
+                    // if yCheck is less than 0 then set to yLen - 1
+                    if (yCheck < 0)
+                    {
+                        yCheck = yLen - 1;
+                    }
+                    // if xCheck is greater than or equal too xLen then set to 0
+                    if (xCheck >= xLen)
+                    {
+                        xCheck = 0;
+                    }
+                    // if yCheck is greater than or equal too yLen then set to 0
+                    if (yCheck >= yLen)
+                    {
+                        yCheck = 0;
+                    }
+
+                    if (universe[xCheck, yCheck] == true) count++;
+                }
+            }
             return count;
         }
 
@@ -664,12 +778,28 @@ namespace Class2_Startup
 
         private void cellColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = cellColor;
 
+            //dialogresult.ok means that the user clicked the affirmative button, like yes or ok
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                cellColor = dlg.Color;
+            }
+            graphicsPanel1.Invalidate();
         }
 
         private void gridColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = gridColor;
 
+            //dialogresult.ok means that the user clicked the affirmative button, like yes or ok
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                gridColor = dlg.Color;
+            }
+            graphicsPanel1.Invalidate();
         }
 
         private void universeSizeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -728,13 +858,15 @@ namespace Class2_Startup
         {
             // update the property
             Properties.Settings.Default.PanelColor = graphicsPanel1.BackColor;
+            Properties.Settings.Default.GridColor = gridColor;
+            Properties.Settings.Default.CellColor = cellColor;
 
             Properties.Settings.Default.Save();
         }
 
         private void hUDVisibleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(isHUDVisible == true)
+            if (isHUDVisible == true)
             {
                 isHUDVisible = false;
                 hUDVisibleToolStripMenuItem.Checked = false;
@@ -744,7 +876,7 @@ namespace Class2_Startup
                 isHUDVisible = true;
                 hUDVisibleToolStripMenuItem.Checked = true;
             }
-            
+
             graphicsPanel1.Invalidate();
         }
 
@@ -778,6 +910,119 @@ namespace Class2_Startup
             }
 
             graphicsPanel1.Invalidate();
+        }
+
+        private void toroidalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (isToroidal == true)
+            {
+                isToroidal = false;
+                toroidalToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                isToroidal = true;
+                toroidalToolStripMenuItem.Checked = true;
+            }
+
+            graphicsPanel1.Invalidate();
+        }
+
+        private void backgroundColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = graphicsPanel1.BackColor;
+
+            //dialogresult.ok means that the user clicked the affirmative button, like yes or ok
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                graphicsPanel1.BackColor = dlg.Color;
+            }
+        }
+
+        private void gridColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = gridColor;
+
+            //dialogresult.ok means that the user clicked the affirmative button, like yes or ok
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                gridColor = dlg.Color;
+            }
+            graphicsPanel1.Invalidate();
+        }
+
+        private void cellColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = cellColor;
+
+            //dialogresult.ok means that the user clicked the affirmative button, like yes or ok
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                cellColor = dlg.Color;
+            }
+            graphicsPanel1.Invalidate();
+        }
+
+        private void toggleCellCountsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (isCellCountVisible == true)
+            {
+                isCellCountVisible = false;
+                cellCountVisibleToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                isCellCountVisible = true;
+                cellCountVisibleToolStripMenuItem.Checked = true;
+            }
+
+            graphicsPanel1.Invalidate();
+        }
+
+        private void toggleHUDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (isHUDVisible == true)
+            {
+                isHUDVisible = false;
+                hUDVisibleToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                isHUDVisible = true;
+                hUDVisibleToolStripMenuItem.Checked = true;
+            }
+
+            graphicsPanel1.Invalidate();
+        }
+
+        private void toggleGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (isGridVisible == true)
+            {
+                isGridVisible = false;
+                gridVisibleToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                isGridVisible = true;
+                gridVisibleToolStripMenuItem.Checked = true;
+            }
+
+            graphicsPanel1.Invalidate();
+        }
+
+        private void timerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IntervalModal dlg = new IntervalModal();
+            dlg.Interval = timer.Interval;
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                timer.Interval = dlg.Interval;
+            }
         }
     }
 }
