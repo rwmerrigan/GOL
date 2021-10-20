@@ -16,5 +16,18 @@ namespace Class2_Startup
         {
             InitializeComponent();
         }
+
+        public int Seed
+        {
+            get
+            {
+                return (int)numericUpDown1.Value;
+            }
+
+            set
+            {
+                numericUpDown1.Value = value;
+            }
+        }
     }
 }

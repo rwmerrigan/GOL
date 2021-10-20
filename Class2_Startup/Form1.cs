@@ -15,6 +15,7 @@ namespace Class2_Startup
     {
         int universeResizeX = 10;
         int universeResizeY = 10;
+        int randSeed = 0;
         // The universe array
         bool[,] universe = new bool[10, 10];
         //Scratchpad to "write" changes to
@@ -70,7 +71,8 @@ namespace Class2_Startup
                         //the next generation as if by over - population.If so in the
                         //universe then kill it in the scratch pad.
                         scratchPad[x, y] = false;
-                    }else if (universe[x, y] == true && CountNeighborsFinite((int)x, (int)y) == 3)
+                    }
+                    else if (universe[x, y] == true && CountNeighborsFinite((int)x, (int)y) == 3)
                     {
                         //Any living cell with 2 or 3 living neighbors will live on into
                         //the next generation.If this is the case in the universe then
@@ -84,7 +86,7 @@ namespace Class2_Startup
                         //the same cell lives in the scratch pad.
                         scratchPad[x, y] = true;
                     }
-                    else if(universe[x, y] == false && CountNeighborsFinite((int)x, (int)y) == 3)
+                    else if (universe[x, y] == false && CountNeighborsFinite((int)x, (int)y) == 3)
                     {
                         //Any dead cell with exactly 3 living neighbors will be born into
                         //the next generation as if by reproduction. If so in the universe
@@ -110,23 +112,6 @@ namespace Class2_Startup
         private void Timer_Tick(object sender, EventArgs e)
         {
             NextGeneration();
-        }
-
-        private void Randomize()
-        {
-            // Random rand = new Random(); Time 
-            // Takes a seed for seed in constructor
-            Random rand = new Random();
-            for (int y = 0; y < universe.GetLength(1); y++)
-            {
-                // Iterate through the universe in the x, left to right
-                for (int x = 0; x < universe.GetLength(0); x++)
-                { 
-                    // Call Next with (0, 2) 
-                    //if random number == 0 then turn the call on, otherwise turn it off
-                    //invalidate when its done
-                }
-            }
         }
 
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
@@ -205,12 +190,12 @@ namespace Class2_Startup
                 // Toggle the cell's state
                 universe[(int)x, (int)y] = !universe[(int)x, (int)y];
 
-                if(universe[(int)x, (int)y] == true)
+                if (universe[(int)x, (int)y] == true)
                 {
                     // increment living cells then write to toolstrip
                     livingCells++;
                 }
-                else if(universe[(int)x, (int)y] == false)
+                else if (universe[(int)x, (int)y] == false)
                 {
                     // decrement living cells then write to toolstrip
                     livingCells--;
@@ -325,12 +310,13 @@ namespace Class2_Startup
                     // Read one row at a time.
                     string row = reader.ReadLine();
 
-                    if(row.StartsWith("!") == true)
+                    if (row.StartsWith("!") == true)
                     {
                         // If the row begins with '!' then it is a comment
                         // and should be ignored.
                         continue;
-                    }else if(row.StartsWith("!") == false)
+                    }
+                    else if (row.StartsWith("!") == false)
                     {
                         // If the row is not a comment then it is a row of cells.
                         // Increment the maxHeight variable for each row read.
@@ -355,23 +341,25 @@ namespace Class2_Startup
                     // Read one row at a time.
                     string row = reader.ReadLine();
 
-                    if(row.StartsWith("!") == true)
+                    if (row.StartsWith("!") == true)
                     {
                         // If the row begins with '!' then
                         // it is a comment and should be ignored.
                         continue;
-                    }else if(row.StartsWith("!") == false)
+                    }
+                    else if (row.StartsWith("!") == false)
                     {
                         // If the row is not a comment then 
                         // it is a row of cells and needs to be iterated through.
                         for (int xPos = 0; xPos < row.Length; xPos++)
                         {
-                            if(row[xPos] == 'O')
+                            if (row[xPos] == 'O')
                             {
                                 // If row[xPos] is a 'O' (capital O) then
                                 // set the corresponding cell in the universe to alive.
                                 universe[xPos, yPos] = true;
-                            }else if(row[xPos] == '.')
+                            }
+                            else if (row[xPos] == '.')
                             {
                                 // If row[xPos] is a '.' (period) then
                                 // set the corresponding cell in the universe to dead.
@@ -416,12 +404,13 @@ namespace Class2_Startup
                     // Iterate through the current row one cell at a time.
                     for (int x = 0; x < universe.GetLength(0); x++)
                     {
-                        if(universe[x,y] == true)
+                        if (universe[x, y] == true)
                         {
                             // If the universe[x,y] is alive then append 'O' (capital O)
                             // to the row string.
                             currentRow += "O";
-                        }else if(universe[x,y] == false)
+                        }
+                        else if (universe[x, y] == false)
                         {
                             // Else if the universe[x,y] is dead then append '.' (period)
                             // to the row string.
@@ -475,17 +464,167 @@ namespace Class2_Startup
 
         private void fromSeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            RandomDialog dlg = new RandomDialog();
+            dlg.Seed = randSeed;
+
+            livingCells = 0;
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                // Iterate through the universe in the x, left to right
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    if (universe[x, y] == true)
+                    {
+                        universe[x, y] = false;
+                    }
+                    if (scratchPad[x, y] == true)
+                    {
+                        scratchPad[x, y] = false;
+                    }
+                }
+            }
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                // Random rand = new Random(); Time 
+                // Takes a seed for seed in constructor
+                randSeed = dlg.Seed;
+                Random rand = new Random(randSeed);
+
+                for (int y = 0; y < universe.GetLength(1); y++)
+                {
+                    // Iterate through the universe in the x, left to right
+                    for (int x = 0; x < universe.GetLength(0); x++)
+                    {
+                        // Call Next with (0, 2) 
+                        if (rand.Next(0, 2) == 0)
+                        {
+                            //if random number == 0 then turn the cell on
+                            universe[x, y] = true;
+                            scratchPad[x, y] = true;
+                            livingCells++;
+                        }
+                        else
+                        {
+                            //otherwise turn it off
+                            universe[x, y] = false;
+                            scratchPad[x, y] = false;
+                        }
+                    }
+                }
+
+                generations = 0;
+                toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+                toolStripStatusLabelLivingCells.Text = "Living Cells = " + livingCells.ToString();
+                //invalidate when its done
+                graphicsPanel1.Invalidate();
+            }
+
+
 
         }
 
         private void fromCurrentSeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            RandomDialog dlg = new RandomDialog();
+            Random rand = new Random(randSeed);
+
+            livingCells = 0;
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                // Iterate through the universe in the x, left to right
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    if (universe[x, y] == true)
+                    {
+                        universe[x, y] = false;
+                    }
+                    if (scratchPad[x, y] == true)
+                    {
+                        scratchPad[x, y] = false;
+                    }
+                }
+            }
+
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                // Iterate through the universe in the x, left to right
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    // Call Next with (0, 2) 
+                    if (rand.Next(0, 2) == 0)
+                    {
+                        //if random number == 0 then turn the cell on
+                        universe[x, y] = true;
+                        scratchPad[x, y] = true;
+                        livingCells++;
+                    }
+                    else
+                    {
+                        //otherwise turn it off
+                        universe[x, y] = false;
+                        scratchPad[x, y] = false;
+                    }
+                }
+            }
+
+            generations = 0;
+            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            toolStripStatusLabelLivingCells.Text = "Living Cells = " + livingCells.ToString();
+            //invalidate when its done
+            graphicsPanel1.Invalidate();
 
         }
 
         private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            RandomDialog dlg = new RandomDialog();
+            Random rand = new Random();
 
+            livingCells = 0;
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                // Iterate through the universe in the x, left to right
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    if (universe[x, y] == true)
+                    {
+                        universe[x, y] = false;
+                    }
+                    if (scratchPad[x, y] == true)
+                    {
+                        scratchPad[x, y] = false;
+                    }
+                }
+            }
+
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                // Iterate through the universe in the x, left to right
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    // Call Next with (0, 2) 
+                    if (rand.Next(0, 2) == 0)
+                    {
+                        //if random number == 0 then turn the cell on
+                        universe[x, y] = true;
+                        scratchPad[x, y] = true;
+                        livingCells++;
+                    }
+                    else
+                    {
+                        //otherwise turn it off
+                        universe[x, y] = false;
+                        scratchPad[x, y] = false;
+                    }
+                }
+            }
+
+            generations = 0;
+            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            toolStripStatusLabelLivingCells.Text = "Living Cells = " + livingCells.ToString();
+            //invalidate when its done
+            graphicsPanel1.Invalidate();
         }
 
         private void backgroundColorToolStripMenuItem_Click(object sender, EventArgs e)
