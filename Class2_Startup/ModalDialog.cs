@@ -17,7 +17,7 @@ namespace Class2_Startup
             InitializeComponent();
         }
 
-        public int Number
+        public int NumberX
         {
             get
             {
@@ -28,6 +28,24 @@ namespace Class2_Startup
             {
                 numericUpDown1.Value = value;
             }
+        }
+
+        public int NumberY
+        {
+            get
+            {
+                return (int)numericUpDown2.Value;
+            }
+
+            set
+            {
+                numericUpDown2.Value = value;
+            }
+        }
+
+        private void numericUpDown2_ValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

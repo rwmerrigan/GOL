@@ -13,7 +13,8 @@ namespace Class2_Startup
 {
     public partial class Form1 : Form
     {
-        int universeSize = 10;
+        int universeResizeX = 10;
+        int universeResizeY = 10;
         // The universe array
         bool[,] universe = new bool[10, 10];
         //Scratchpad to "write" changes to
@@ -292,7 +293,9 @@ namespace Class2_Startup
                 }
             }
             generations = 0;
+            livingCells = 0;
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            toolStripStatusLabelLivingCells.Text = "Living Cells = " + livingCells.ToString();
             graphicsPanel1.Invalidate();
         }
 
@@ -488,13 +491,12 @@ namespace Class2_Startup
         private void backgroundColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ColorDialog dlg = new ColorDialog();
-            dlg.Color = backgroundColor;
+            dlg.Color = graphicsPanel1.BackColor;
 
             //dialogresult.ok means that the user clicked the affirmative button, like yes or ok
             if (DialogResult.OK == dlg.ShowDialog())
             {
-                backgroundColor = dlg.Color;
-                graphicsPanel1.Invalidate();
+                graphicsPanel1.BackColor = dlg.Color;
             }
         }
 
@@ -511,7 +513,8 @@ namespace Class2_Startup
         private void universeSizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ModalDialog dlg = new ModalDialog();
-            dlg.Number = universeSize;
+            dlg.NumberX = universeResizeX;
+            dlg.NumberY = universeResizeY;
 
             if (DialogResult.OK == dlg.ShowDialog())
             {
@@ -531,10 +534,13 @@ namespace Class2_Startup
                     }
                 }
                 generations = 0;
+                livingCells = 0;
                 toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
-                universeSize = dlg.Number;
-                universe = new bool[universeSize, universeSize];
-                scratchPad = new bool[universeSize, universeSize];
+                toolStripStatusLabelLivingCells.Text = "Living Cells = " + livingCells.ToString();
+                universeResizeX = dlg.NumberX;
+                universeResizeY = dlg.NumberY;
+                universe = new bool[universeResizeX, universeResizeY];
+                scratchPad = new bool[universeResizeX, universeResizeY];
                 graphicsPanel1.Invalidate();
             }
 
@@ -542,7 +548,8 @@ namespace Class2_Startup
 
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            Properties.Settings.Default.Reload();
+            graphicsPanel1.BackColor = Properties.Settings.Default.PanelColor;
         }
 
         private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
@@ -553,6 +560,14 @@ namespace Class2_Startup
         private void toolStripStatusLabelLivingCells_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // update the property
+            Properties.Settings.Default.PanelColor = graphicsPanel1.BackColor;
+
+            Properties.Settings.Default.Save();
         }
     }
 }
